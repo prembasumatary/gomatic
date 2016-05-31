@@ -205,21 +205,28 @@ class GoCdConfigurator(object):
 
 
 class HostRestClient(object):
-    def __init__(self, host):
+    def __init__(self, host, username=None, password=None, ssl=False):
         self.__host = host
+        self.__username = username
+        self.__password = password
+        self.__ssl = ssl
 
     def __repr__(self):
-        return 'HostRestClient("%s")' % self.__host
+        return 'HostRestClient("{0}", ssl={1})'.format(self.__host, self.__ssl)
 
     def __path(self, path):
-        return ('http://%s' % self.__host) + path
+        http_prefix = 'https://' if self.__ssl else 'http://'
+        return '{0}{1}{2}'.format(http_prefix, self.__host, path)
+
+    def __auth(self):
+        return (self.__username, self.__password) if self.__username or self.__password else None
 
     def get(self, path):
-        return requests.get(self.__path(path))
+        return requests.get(self.__path(path), auth=self.__auth())
 
     def post(self, path, data):
         url = self.__path(path)
-        result = requests.post(url, data)
+        result = requests.post(url, data, auth=self.__auth())
         if result.status_code != 200:
             try:
                 result_json = json.loads(result.text.replace("\\'", "'"))
@@ -234,6 +241,9 @@ if __name__ == '__main__':
                                                  'Run python -m gomatic.go_cd_configurator to reverse engineer code to configure an existing pipeline.')
     parser.add_argument('-s', '--server', help='the go server (e.g. "localhost:8153" or "my.gocd.com")')
     parser.add_argument('-p', '--pipeline', help='the name of the pipeline to reverse-engineer the config for')
+    parser.add_argument('--username', help='the username for the gocd server', default=None)
+    parser.add_argument('--password', help='the password for the gocd server', default=None)
+    parser.add_argument('--ssl', help='use HTTPS for the connection to the gocd server', dest='ssl', action='store_true', default=False)
 
     args = parser.parse_args()
 
@@ -241,7 +251,7 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-    go_server = GoCdConfigurator(HostRestClient(args.server))
+    go_server = GoCdConfigurator(HostRestClient(args.server, args.username, args.password, ssl=args.ssl))
 
     matching_pipelines = [p for p in go_server.pipelines if p.name == args.pipeline]
     if len(matching_pipelines) != 1:
