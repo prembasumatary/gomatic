@@ -36,7 +36,7 @@ class populated_go_server(object):
         try:
             start_go_server(self.gocd_version, self.gocd_download_version_string)
 
-            configurator = GoCdConfigurator(HostRestClient('localhost:8153'))
+            configurator = GoCdConfigurator(HostRestClient('localhost:8154', ssl=True, verify_ssl=False))
             pipeline = configurator \
                 .ensure_pipeline_group("P.Group") \
                 .ensure_replacement_of_pipeline("more-options") \
@@ -52,7 +52,7 @@ class populated_go_server(object):
             job.add_task(ExecTask(['ls']))
 
             configurator.save_updated_config(save_config_locally=True)
-            return GoCdConfigurator(HostRestClient('localhost:8153'))
+            return GoCdConfigurator(HostRestClient('localhost:8154', ssl=True, verify_ssl=False))
         except:
             # Swallow exception if __exit__ returns a True value
             if self.__exit__(*sys.exc_info()):
@@ -94,27 +94,27 @@ def check_docker():
 
 class IntegrationTest(unittest.TestCase):
     gocd_versions = [
-        ('13.1.1-16714','-13.1.1-16714'),
-        ('13.2.2-17585','-13.2.2-17585'),
-        ('13.3.1-18130','-13.3.1-18130'),
-        ('13.4.0-18334','-13.4.0-18334'),
-        ('13.4.1-18342','-13.4.1-18342'),
-        ('14.1.0-18882','-14.1.0-18882'),
-        ('14.2.0-377',  '-14.2.0-377'),
-        ('14.3.0-1186', '-14.3.0-1186'),
-        ('14.4.0-1356', '-14.4.0-1356'),
-        ('15.1.0-1863', '-15.1.0-1863'),
-        ('15.2.0-2248', '-15.2.0-2248'),
-        # '15.3.0-2771', no longer on download page
-        # '15.3.1-2777', no longer on download page
-        ('16.1.0-2855', '-16.1.0-2855'),
-        ('16.2.1-3027', '-16.2.1-3027'),
-        ('16.3.0-3183', '-16.3.0-3183'),
-        ('16.4.0-3223', '-16.4.0-3223'),
-        ('16.5.0-3305', '-16.5.0-3305'),
-        ('16.6.0-3590', '-16.6.0-3590'),
-        ('16.7.0-3819', '_16.7.0-3819_all'), # arghhh! from now they have "_all" suffix
-        ('16.8.0-3929', '_16.8.0-3929_all')
+        # ('13.1.1-16714','-13.1.1-16714'),
+        # ('13.2.2-17585','-13.2.2-17585'),
+        # ('13.3.1-18130','-13.3.1-18130'),
+        # ('13.4.0-18334','-13.4.0-18334'),
+        # ('13.4.1-18342','-13.4.1-18342'),
+        # ('14.1.0-18882','-14.1.0-18882'),
+        # ('14.2.0-377',  '-14.2.0-377'),
+        # ('14.3.0-1186', '-14.3.0-1186'),
+        # ('14.4.0-1356', '-14.4.0-1356'),
+        # ('15.1.0-1863', '-15.1.0-1863'),
+        # ('15.2.0-2248', '-15.2.0-2248'),
+        # # '15.3.0-2771', no longer on download page
+        # # '15.3.1-2777', no longer on download page
+        # ('16.1.0-2855', '-16.1.0-2855'),
+        # ('16.2.1-3027', '-16.2.1-3027'),
+        # ('16.3.0-3183', '-16.3.0-3183'),
+        # ('16.4.0-3223', '-16.4.0-3223'),
+        # ('16.5.0-3305', '-16.5.0-3305'),
+        # ('16.6.0-3590', '-16.6.0-3590'),
+         ('16.7.0-3819', '_16.7.0-3819_all'), # arghhh! from now they have "_all" suffix
+        # ('16.8.0-3929', '_16.8.0-3929_all')
     ]
 
     def test_all_versions(self):

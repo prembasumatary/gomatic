@@ -1,0 +1,5 @@
+GO_SERVER_PORT=8153
+GO_SERVER_SSL_PORT=8154
+SERVER_WORK_DIR=/var/lib/go-server
+DAEMON=Y
+export GO_SERVER_SYSTEM_PROPERTIES="-Dgo.ssl.ciphers.include='TLS_ECDHE.*' -Dgo.ssl.ciphers.exclude='.*NULL.*,.*RC4.*' -Dgo.ssl.protocols.include='TLSv1.2' -Dgo.ssl.renegotiation.allowed='N'"

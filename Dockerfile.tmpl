@@ -8,8 +8,12 @@ RUN dpkg -i /tmp/go-server-${GO_VERSION}.deb
 
 RUN rm -f /tmp/go-server-${GO_VERSION}.deb
 
+RUN apt-get update
+RUN apt-get install net-tools
+
+COPY go-server /etc/default/go-server
+
 CMD /etc/init.d/go-server start && tail -F /var/log/go-server/go-server.log
 
 EXPOSE 8153
-
 EXPOSE 8154
